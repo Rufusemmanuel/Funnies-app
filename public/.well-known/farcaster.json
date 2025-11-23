@@ -1,8 +1,8 @@
 {
-  "schemaVersion": "1.0.0",
+  "version": "1.0.1",
   "name": "Funnies",
   "description": "Mint a random Funnies NFT on Base mainnet for Farcaster FIDs up to 1,000,000.",
-  "appUrl": "https://funnies-app.vercel.app",
+  "subtitle": "Base Mini App for Funnies NFTs",
   "icon": "https://funnies-app.vercel.app/icon.png",
   "homeUrl": "https://funnies-app.vercel.app",
   "primaryColor": "#7a3cff",
@@ -33,14 +33,9 @@
       "value": "https://warpcast.com/funnies"
     }
   ],
-  "splashScreen": {
-    "title": "Funnies on Base",
-    "description": "Mint your random Funnies NFT instantly.",
-    "image": "https://funnies-app.vercel.app/images/funnies/1.jpg"
-  },
   "accountAssociation": {
     "header": "eyJmaWQiOjYyMTYwNSwidHlwZSI6ImN1c3RvZHkiLCJrZXkiOiIweDJCZGJDMkE0RDFBN2QzNTYxZGRmOThCQzY1Mjg1RjRiQmRGNTIyQTMifQ",
     "payload": "eyJkb21haW4iOiJmdW5uaWVzLWFwcC52ZXJjZWwuYXBwIn0",
     "signature": "IdyxjDA5iRyDFHXJmDWhBgtIvKeVtPLX1NMOjty78DV4pvVRC7KEuVoLjhMgcsSLa2JvfOwNzaWleURfdBbRmRs="
-  ]
+  }
 }
