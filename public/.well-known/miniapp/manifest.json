@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "1.0.0",
+  "version": "1.0.1",
+  "name": "Funnies",
+  "description": "Mint a random Funnies NFT on Base mainnet for Farcaster FIDs up to 1,000,000.",
+  "subtitle": "Base Mini App for Funnies NFTs",
+  "homeUrl": "https://funnies-app.vercel.app",
+  "appUrl": "https://funnies-app.vercel.app",
+  "iconUrl": "https://funnies-app.vercel.app/icon.png",
+  "splashImageUrl": "https://funnies-app.vercel.app/images/funnies/1.jpg",
+  "splashBackgroundColor": "#ffffff",
+  "primaryCategory": "collectibles",
+  "tags": ["nft", "collectibles", "art", "base"],
+  "screenshotUrls": [
+    "https://funnies-app.vercel.app/images/funnies/1.jpg",
+    "https://funnies-app.vercel.app/images/funnies/2.jpg",
+    "https://funnies-app.vercel.app/images/funnies/3.jpg"
+  ],
+  "heroImageUrl": "https://funnies-app.vercel.app/images/funnies/2.jpg",
+  "tagline": "Mint random Funnies on Base",
+  "ogTitle": "Funnies on Base",
+  "ogDescription": "Mint a random Funnies NFT on Base mainnet for eligible Farcaster FIDs.",
+  "ogImageUrl": "https://funnies-app.vercel.app/images/funnies/3.jpg",
+  "noindex": false
+}
