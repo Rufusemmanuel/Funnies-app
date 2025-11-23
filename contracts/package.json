@@ -1,0 +1,22 @@
+{
+  "name": "funnies-contracts",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "compile": "hardhat compile",
+    "compile:contracts": "pnpm run compile",
+    "deploy:funnies:base": "hardhat run scripts/deployFunniesAirdrop.ts --network base",
+    "deploy:funnies:sepolia": "hardhat run scripts/deployFunniesAirdrop.ts --network baseSepolia",
+    "lint": "hardhat check"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "@openzeppelin/contracts": "^5.1.0",
+    "@types/node": "^22.10.1",
+    "dotenv": "^16.4.5",
+    "hardhat": "^2.22.8",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.3"
+  },
+  "packageManager": "pnpm@10.23.0"
+}

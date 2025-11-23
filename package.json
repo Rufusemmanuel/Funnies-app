@@ -6,7 +6,10 @@
     "build": "next build",
     "dev": "next dev",
     "lint": "eslint .",
-    "start": "next start"
+    "start": "next start",
+    "compile:contracts": "pnpm --dir contracts compile",
+    "deploy:funnies:base": "pnpm --dir contracts deploy:funnies:base",
+    "deploy:funnies:sepolia": "pnpm --dir contracts deploy:funnies:sepolia"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
@@ -61,7 +64,10 @@
     "vaul": "^1.1.2",
     "viem": "latest",
     "wagmi": "latest",
-    "zod": "3.25.76"
+    "zod": "3.25.76",
+    "@farcaster/miniapp-sdk": "^0.2.1",
+    "@farcaster/miniapp-wagmi-connector": "^1.1.0",
+    "@coinbase/onchainkit": "^0.36.11"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.9",
@@ -71,6 +77,6 @@
     "postcss": "^8.5",
     "tailwindcss": "^4.1.9",
     "tw-animate-css": "1.3.3",
-    "typescript": "^5"
+    "typescript": "^5.7.3"
   }
 }
