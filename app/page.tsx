@@ -14,7 +14,7 @@ import {
   useWriteContract,
 } from "wagmi"
 import { base } from "viem/chains"
-import { AlertTriangle, BadgeCheck, CheckCircle2, Loader2Icon, Sparkles, Wallet, XCircle } from "lucide-react"
+import { AlertTriangle, BadgeCheck, CheckCircle2, Loader2Icon, Wallet, XCircle } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
@@ -189,14 +189,14 @@ export default function AirdropPage() {
 
   useEffect(() => {
     if (!isMiniApp || readySent) return
-    void miniapp.actions.ready({ title: "funnies", primaryButton: { title: "Mint random NFT" } })
+    void miniapp.actions.ready({ title: "funnies", primaryButton: { title: "Mint" } })
     setReadySent(true)
   }, [isMiniApp, readySent])
 
   useEffect(() => {
     if (!isMiniApp) return
     void miniapp.actions.setPrimaryButton({
-      title: claimStatus === "success" ? "Minted" : "Mint random NFT",
+      title: claimStatus === "success" ? "Minted" : "Mint",
       disabled: !isEligible || !address || claimStatus === "loading",
       loading: claimStatus === "loading",
     })
@@ -297,15 +297,11 @@ export default function AirdropPage() {
 
       <div className="z-10 w-full max-w-4xl space-y-8">
         <div className="text-center space-y-3 flex flex-col items-center">
-          <div className="flex items-center gap-3 rounded-full bg-white/10 px-4 py-2 border border-white/10 backdrop-blur">
-            <Sparkles className="h-4 w-4 text-accent" />
-            <span className="text-sm uppercase tracking-[0.2em] text-muted-foreground">Base Mini App</span>
-          </div>
           <h1 className="text-6xl font-black tracking-tighter bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent drop-shadow-sm">
             funnies
           </h1>
           <p className="text-muted-foreground font-medium">
-            Random NFT airdrop for Farcaster FIDs up to 1,000,000 - delivered straight to your Base wallet.
+            NFT airdrop for early Farcaster supporters - delivered straight to your Base wallet.
           </p>
         </div>
 
@@ -449,13 +445,13 @@ export default function AirdropPage() {
                     {claimStatus === "loading" ? (
                       <>
                         <Loader2Icon className="w-5 h-5 mr-2 animate-spin" />
-                        Minting on Base...
-                      </>
-                    ) : (
-                      "Claim random NFT"
-                    )}
-                  </Button>
+                    Minting on Base...
+                  </>
+                ) : (
+                  "Mint"
                 )}
+              </Button>
+            )}
 
                 {claimStatus === "error" && (
                   <p className="text-sm text-destructive text-center bg-destructive/10 p-2 rounded animate-in fade-in slide-in-from-top-1">
@@ -466,7 +462,6 @@ export default function AirdropPage() {
             )}
 
             <div className="space-y-2 text-xs text-muted-foreground">
-              <p>We mint via Base using the Mini App primary button when available.</p>
               {!mintContract && <p className="text-destructive">Set NEXT_PUBLIC_MINT_CONTRACT to enable minting.</p>}
             </div>
           </Card>
