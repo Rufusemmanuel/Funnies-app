@@ -14,9 +14,11 @@
     "appUrl": "https://funnies-app.vercel.app",
     "iconUrl": "https://funnies-app.vercel.app/icon-1024.png",
     "splashImageUrl": "https://funnies-app.vercel.app/images/splashscreen/splash-1080x1920.png",
+    "imageUrl": "https://funnies-app.vercel.app/images/og/og-1200x630.png",
     "splashBackgroundColor": "#ffffff",
     "subtitle": "Base Mini App for Funnies NFTs",
     "description": "Mint random Funnies NFTs on Base for Farcaster FIDs up to 1000000.",
+    "buttonTitle": "Claim NFT",
     "screenshotUrls": [
       "https://funnies-app.vercel.app/images/funnies/1.jpg",
       "https://funnies-app.vercel.app/images/funnies/2.jpg",
