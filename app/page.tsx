@@ -25,6 +25,8 @@ import { FullScreenSuccess } from "./components/FullScreenSuccess"
 
 type ClaimState = "idle" | "loading" | "success" | "error"
 
+export const revalidate = 3600
+
 export default function AirdropPage() {
   const { address, isConnected: isWalletConnected } = useAccount()
   const { connect, connectors, status: connectStatus } = useConnect()

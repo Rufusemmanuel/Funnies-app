@@ -10,9 +10,30 @@ const _geist = Geist({ subsets: ["latin"] })
 const _geistMono = Geist_Mono({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://funnies-app.vercel.app"),
   title: "funnies",
   description: "Claim your exclusive NFT if you have a Farcaster ID",
-    generator: 'v0.app'
+  generator: "v0.app",
+  openGraph: {
+    title: "funnies",
+    description: "NFT airdrop for early Farcaster supporters on Base.",
+    url: "https://funnies-app.vercel.app",
+    siteName: "funnies",
+    images: [
+      {
+        url: "/images/og/og-1200x630.png",
+        width: 1200,
+        height: 630,
+        alt: "funnies NFT airdrop on Base",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "funnies",
+    description: "NFT airdrop for early Farcaster supporters on Base.",
+    images: ["/images/og/og-1200x630.png"],
+  },
 }
 
 export default function RootLayout({
