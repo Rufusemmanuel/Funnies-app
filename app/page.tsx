@@ -189,14 +189,14 @@ export default function AirdropPage() {
 
   useEffect(() => {
     if (!isMiniApp || readySent) return
-    void miniapp.actions.ready({ title: "funnies", primaryButton: { title: "Mint" } })
+    void miniapp.actions.ready({ title: "funnies", primaryButton: { title: "Claim NFT" } })
     setReadySent(true)
   }, [isMiniApp, readySent])
 
   useEffect(() => {
     if (!isMiniApp) return
     void miniapp.actions.setPrimaryButton({
-      title: claimStatus === "success" ? "Minted" : "Mint",
+      title: claimStatus === "success" ? "Minted" : "Claim NFT",
       disabled: !isEligible || !address || claimStatus === "loading",
       loading: claimStatus === "loading",
     })
@@ -445,10 +445,10 @@ export default function AirdropPage() {
                     {claimStatus === "loading" ? (
                       <>
                         <Loader2Icon className="w-5 h-5 mr-2 animate-spin" />
-                    Minting on Base...
+                    Claiming on Base...
                   </>
                 ) : (
-                  "Mint"
+                  "Claim NFT"
                 )}
               </Button>
             )}
