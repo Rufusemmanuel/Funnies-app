@@ -188,19 +188,36 @@ export default function AirdropPage() {
   }, [address, mintedNft, mintTxHash, receipt])
 
   useEffect(() => {
-    if (!isMiniApp || readySent) return
-    void miniapp.actions.ready({ title: "funnies", primaryButton: { title: "Claim NFT" } })
-    setReadySent(true)
-  }, [isMiniApp, readySent])
+    const syncPrimaryButton = async () => {
+      const title = claimStatus === "success" ? "Minted" : "Claim NFT"
+      const disabled = !isEligible || !address || claimStatus === "loading"
+      const loading = claimStatus === "loading"
+      try {
+        await miniapp.actions.ready({ title: "funnies", primaryButton: { title } })
+        await miniapp.actions.setPrimaryButton({ title, disabled, loading })
+        setReadySent(true)
+      } catch {
+        // Ignore outside Mini App shell
+      }
+    }
 
-  useEffect(() => {
-    if (!isMiniApp) return
-    void miniapp.actions.setPrimaryButton({
-      title: claimStatus === "success" ? "Minted" : "Claim NFT",
-      disabled: !isEligible || !address || claimStatus === "loading",
-      loading: claimStatus === "loading",
-    })
-  }, [address, claimStatus, isEligible, isMiniApp])
+    if (!readySent) {
+      void syncPrimaryButton()
+    } else {
+      // Keep label/state in sync after first ready call.
+      void (async () => {
+        try {
+          await miniapp.actions.setPrimaryButton({
+            title: claimStatus === "success" ? "Minted" : "Claim NFT",
+            disabled: !isEligible || !address || claimStatus === "loading",
+            loading: claimStatus === "loading",
+          })
+        } catch {
+          /* ignore */
+        }
+      })()
+    }
+  }, [address, claimStatus, isEligible, readySent])
 
   useEffect(() => {
     if (!isMiniApp) return
