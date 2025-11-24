@@ -15,10 +15,11 @@
     "iconUrl": "https://funnies-app.vercel.app/icon-1024.png",
     "splashImageUrl": "https://funnies-app.vercel.app/images/splashscreen/splash-1080x1920.png",
     "imageUrl": "https://funnies-app.vercel.app/images/og/og-1200x630.png",
+    "aspectRatio": "1.91:1",
     "splashBackgroundColor": "#ffffff",
     "subtitle": "Base Mini App for Funnies NFTs",
     "description": "Mint a random Funnies NFT on Base mainnet for eligible Farcaster FIDs.",
-    "buttonTitle": "Claim NFT",
+    "buttonTitle": "Open Funnies",
     "screenshotUrls": [
       "https://funnies-app.vercel.app/images/funnies/1.jpg",
       "https://funnies-app.vercel.app/images/funnies/2.jpg",
@@ -34,6 +35,14 @@
     "noindex": false,
     "privacyUrl": "https://funnies-app.vercel.app/privacy",
     "termsUrl": "https://funnies-app.vercel.app/terms",
-    "webhookUrl": "https://funnies-app.vercel.app/api/webhook"
+    "webhookUrl": "https://funnies-app.vercel.app/api/webhook",
+    "actions": [
+      {
+        "type": "launch_miniapp",
+        "name": "Funnies",
+        "title": "Open Funnies",
+        "url": "https://funnies-app.vercel.app"
+      }
+    ]
   }
 }
