@@ -12,17 +12,17 @@
     "name": "Funnies",
     "homeUrl": "https://funnies-app.vercel.app",
     "appUrl": "https://funnies-app.vercel.app",
-    "iconUrl": "https://funnies-app.vercel.app/icon.svg",
+    "iconUrl": "https://funnies-app.vercel.app/icon-1024.png",
     "splashImageUrl": "https://funnies-app.vercel.app/images/funnies/1.jpg",
     "splashBackgroundColor": "#ffffff",
     "subtitle": "Base Mini App for Funnies NFTs",
-    "description": "Mint a random Funnies NFT on Base mainnet for Farcaster FIDs up to 1,000,000.",
+    "description": "Mint a random Funnies NFT on Base for Farcaster FIDs up to 1000000.",
     "screenshotUrls": [
       "https://funnies-app.vercel.app/images/funnies/1.jpg",
       "https://funnies-app.vercel.app/images/funnies/2.jpg",
       "https://funnies-app.vercel.app/images/funnies/3.jpg"
     ],
-    "primaryCategory": "collectibles",
+    "primaryCategory": "entertainment",
     "tags": ["nft", "collectibles", "art", "base"],
     "heroImageUrl": "https://funnies-app.vercel.app/images/funnies/2.jpg",
     "tagline": "Mint random Funnies on Base",
@@ -31,6 +31,7 @@
     "ogImageUrl": "https://funnies-app.vercel.app/images/funnies/3.jpg",
     "noindex": false,
     "privacyUrl": "https://funnies-app.vercel.app/privacy",
-    "termsUrl": "https://funnies-app.vercel.app/terms"
+    "termsUrl": "https://funnies-app.vercel.app/terms",
+    "webhookUrl": "https://funnies-app.vercel.app/api/webhook"
   }
 }
