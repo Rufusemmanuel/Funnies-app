@@ -6,7 +6,7 @@
   "subtitle": "Base Mini App for Funnies NFTs",
   "homeUrl": "https://funnies-app.vercel.app",
   "appUrl": "https://funnies-app.vercel.app",
-  "iconUrl": "https://funnies-app.vercel.app/icon.png",
+  "iconUrl": "https://funnies-app.vercel.app/icon.svg",
   "splashImageUrl": "https://funnies-app.vercel.app/images/funnies/1.jpg",
   "splashBackgroundColor": "#ffffff",
   "primaryCategory": "collectibles",
