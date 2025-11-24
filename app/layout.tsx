@@ -14,11 +14,13 @@ export const metadata: Metadata = {
   title: "funnies",
   description: "Claim your exclusive NFT if you have a Farcaster ID",
   generator: "v0.app",
+  alternates: { canonical: "/" },
   openGraph: {
     title: "funnies",
     description: "NFT airdrop for early Farcaster supporters on Base.",
     url: "https://funnies-app.vercel.app",
     siteName: "funnies",
+    type: "website",
     images: [
       {
         url: "/images/og/og-1200x630.png",

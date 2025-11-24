@@ -15,6 +15,10 @@ const nextConfig = {
             key: "Cache-Control",
             value: "public, max-age=3600, s-maxage=3600, stale-while-revalidate=300",
           },
+          {
+            key: "X-Robots-Tag",
+            value: "all",
+          },
         ],
       },
     ]
