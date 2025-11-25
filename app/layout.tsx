@@ -36,6 +36,24 @@ export const metadata: Metadata = {
     description: "NFT airdrop for early Farcaster supporters on Base.",
     images: ["/images/og/og-1200x630.png"],
   },
+  other: {
+    // Farcaster Mini App embed metadata for sharing/preview tools
+    "fc:miniapp": JSON.stringify({
+      version: "1.0.0",
+      title: "Funnies on Base",
+      subtitle: "Mint random Funnies on Base",
+      description: "Mint a random Funnies NFT on Base mainnet for eligible Farcaster FIDs.",
+      imageUrl: "https://funnies-app.vercel.app/images/og/og-1200x630.png",
+      actions: [
+        {
+          type: "launch_miniapp",
+          name: "Funnies",
+          title: "Open Funnies",
+          url: "https://funnies-app.vercel.app",
+        },
+      ],
+    }),
+  },
 }
 
 export default function RootLayout({
