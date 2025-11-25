@@ -39,16 +39,15 @@ export const metadata: Metadata = {
   other: {
     // Farcaster Mini App embed metadata for sharing/preview tools
     "fc:miniapp": JSON.stringify({
-      version: "1.0.0",
+      version: "1",
       title: "Funnies on Base",
       subtitle: "Mint random Funnies on Base",
       description: "Mint a random Funnies NFT on Base mainnet for eligible Farcaster FIDs.",
       imageUrl: "https://funnies-app.vercel.app/images/og/og-1200x630.png",
-      aspectRatio: "1.91:1",
       button: {
         title: "Open Funnies",
         action: {
-          type: "launch_miniapp",
+          type: "launch_frame",
           name: "Funnies",
           url: "https://funnies-app.vercel.app",
         },
