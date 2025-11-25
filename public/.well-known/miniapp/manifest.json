@@ -8,6 +8,7 @@
   "appUrl": "https://funnies-app.vercel.app",
   "iconUrl": "https://funnies-app.vercel.app/icon.svg",
   "splashImageUrl": "https://funnies-app.vercel.app/images/funnies/1.jpg",
+  "imageUrl": "https://funnies-app.vercel.app/images/og/og-1200x630.png",
   "splashBackgroundColor": "#ffffff",
   "primaryCategory": "collectibles",
   "tags": ["nft", "collectibles", "art", "base"],
