@@ -4,6 +4,7 @@
     "payload": "eyJkb21haW4iOiJmdW5uaWVzLWFwcC52ZXJjZWwuYXBwIn0",
     "signature": "IdyxjDA5iRyDFHXJmDWhBgtIvKeVtPLX1NMOjty78DV4pvVRC7KEuVoLjhMgcsSLa2JvfOwNzaWleURfdBbRmRs="
   },
+  "imageUrl": "https://funnies-app.vercel.app/images/og/og-1200x630.png",
   "baseBuilder": {
     "ownerAddress": "0x02Da2daA45211678D80E576212825eB434013624"
   },
