@@ -44,14 +44,15 @@ export const metadata: Metadata = {
       subtitle: "Mint random Funnies on Base",
       description: "Mint a random Funnies NFT on Base mainnet for eligible Farcaster FIDs.",
       imageUrl: "https://funnies-app.vercel.app/images/og/og-1200x630.png",
-      actions: [
-        {
+      aspectRatio: "1.91:1",
+      button: {
+        title: "Open Funnies",
+        action: {
           type: "launch_miniapp",
           name: "Funnies",
-          title: "Open Funnies",
           url: "https://funnies-app.vercel.app",
         },
-      ],
+      },
     }),
   },
 }
