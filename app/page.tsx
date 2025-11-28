@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import Image from "next/image"
 import { sdk as miniapp } from "@farcaster/miniapp-sdk"
 import type { MiniAppContext, MiniAppUser } from "@farcaster/miniapp-core"
@@ -49,6 +49,7 @@ export default function AirdropPage() {
   const [hasMinted, setHasMinted] = useState(false)
   const [mintedNft, setMintedNft] = useState<FunniesNft | null>(null)
   const [mintTxHash, setMintTxHash] = useState<string | undefined>(undefined)
+  const addPromptShown = useRef(false) // prevent double-invoking the add-miniapp prompt
 
   const mintContract = process.env.NEXT_PUBLIC_MINT_CONTRACT as `0x${string}` | undefined
 
@@ -168,6 +169,21 @@ export default function AirdropPage() {
   useEffect(() => {
     void refreshMiniAppContext()
   }, [refreshMiniAppContext])
+
+  useEffect(() => {
+    const promptAddMiniApp = async () => {
+      if (addPromptShown.current) return
+      try {
+        const inMiniApp = await miniapp.isInMiniApp()
+        if (!inMiniApp) return
+        addPromptShown.current = true
+        await miniapp.actions.addMiniApp() // Triggers Farcaster native add/notify sheet
+      } catch (err) {
+        console.warn("Add Mini App prompt skipped", err)
+      }
+    }
+    void promptAddMiniApp()
+  }, [])
 
   useEffect(() => {
     if (receipt?.status === "success") {
