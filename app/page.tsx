@@ -118,9 +118,15 @@ export default function AirdropPage() {
         try {
           if (/Farcaster|Warpcast/i.test(navigator.userAgent)) return true
           const g = window as any
-          if (g.farcaster || g.sdk) return true
+          if (g.farcaster || g.warpcast || g.sdk) return true
+          if (typeof document !== "undefined") {
+            const ref = document.referrer || ""
+            if (/warpcast\.com|farcaster/i.test(ref)) return true
+          }
           if (window.parent && window.parent !== window) return true
-        } catch {}
+        } catch (err) {
+          console.warn("Farcaster detection error", err)
+        }
         return false
       }
       const extractHash = (res: any): `0x${string}` | undefined => {
@@ -149,15 +155,16 @@ export default function AirdropPage() {
           })
           const hash = extractHash(res)
           if (hash) return hash
-        } catch {
-          // continue to fallback
+        } catch (err: any) {
+          // keep going; record last error
+          console.warn("sendCalls failed", err?.message || err)
         }
 
         if (eth?.request) {
           try {
             await eth.request({ method: "eth_requestAccounts" })
-          } catch {
-            /* ignore */
+          } catch (err) {
+            console.warn("eth_requestAccounts failed", err)
           }
           try {
             const res = await eth.request({
@@ -168,34 +175,38 @@ export default function AirdropPage() {
                     to: c.to,
                     data: c.data,
                     value: c.value !== undefined ? toHex(c.value) : undefined,
-                  })),
+                  })), 
                   capabilities: sendCallsCapabilities(),
                 },
               ],
             })
             const hash = extractHash(res)
             if (hash) return hash
-          } catch {
-            /* continue to eth_sendTransaction */
+          } catch (err: any) {
+            throw new Error(`wallet_sendCalls failed: ${err?.message || String(err)}`)
           }
         }
       }
 
       if (eth?.request) {
         const txData = appendBuilderCodeSuffix((first.data || "0x") as `0x${string}`)
+        const tx: any = { to: first.to, data: txData, from: address }
+        if (first.value !== undefined) tx.value = toHex(first.value)
+        try {
+          const gas = await eth.request({ method: "eth_estimateGas", params: [tx] })
+          if (gas) tx.gas = gas
+        } catch (err) {
+          console.warn("eth_estimateGas failed", err)
+        }
         const res = await eth.request({
           method: "eth_sendTransaction",
-          params: [
-            {
-              to: first.to,
-              data: txData,
-              from: address,
-              value: first.value !== undefined ? toHex(first.value) : undefined,
-            },
-          ],
+          params: [tx],
         })
         const hash = extractHash(res)
         if (hash) return hash
+        throw new Error("eth_sendTransaction returned no hash")
+      } else {
+        throw new Error("No EIP-1193 provider available")
       }
 
       throw new Error("Unable to send transaction with builder code attached.")
