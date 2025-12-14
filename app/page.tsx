@@ -114,7 +114,7 @@ export default function AirdropPage() {
     async (calls: { to: `0x${string}`; data?: `0x${string}`; value?: bigint }[]) => {
       const ethWindow = typeof window !== "undefined" ? (window as any).ethereum : undefined
       const isMini = await sdk.isInMiniApp().catch(() => false)
-      const eth = isMini ? await sdk.wallet.getEthereumProvider().catch(() => undefined) : ethWindow
+      const provider = isMini ? await sdk.wallet.getEthereumProvider().catch(() => undefined) : ethWindow
       const extractHash = (res: any): `0x${string}` | undefined => {
         if (!res) return undefined
         if (typeof res === "string") return res as `0x${string}`
@@ -129,6 +129,8 @@ export default function AirdropPage() {
       const first = calls[0]
       if (!first) throw new Error("No calls provided for transaction send.")
 
+      let lastError: any = null
+
       if (!isMini) {
         try {
           const res = await sendCallsAsync?.({
@@ -139,18 +141,17 @@ export default function AirdropPage() {
           const hash = extractHash(res)
           if (hash) return hash
         } catch (err: any) {
-          // keep going; record last error
-          console.warn("sendCalls failed", err?.message || err)
+          lastError = err
         }
 
-        if (eth?.request) {
+        if (provider?.request) {
           try {
-            await eth.request({ method: "eth_requestAccounts" })
+            await provider.request({ method: "eth_requestAccounts" })
           } catch (err) {
             console.warn("eth_requestAccounts failed", err)
           }
           try {
-            const res = await eth.request({
+            const res = await provider.request({
               method: "wallet_sendCalls",
               params: [
                 {
@@ -175,20 +176,24 @@ export default function AirdropPage() {
       const baseTx: any = { to: first.to, data: txData, from: address }
       if (first.value !== undefined) baseTx.value = toHex(first.value)
 
-      if (eth?.request) {
+      if (provider?.request) {
         try {
-          const gas = await eth.request({ method: "eth_estimateGas", params: [baseTx] })
+          const gas = await provider.request({ method: "eth_estimateGas", params: [baseTx] })
           if (gas) baseTx.gas = gas
         } catch (err) {
           console.warn("eth_estimateGas failed", err)
         }
-        const res = await eth.request({
+        const res = await provider.request({
           method: "eth_sendTransaction",
           params: [baseTx],
         })
         const hash = extractHash(res)
         if (hash) return hash
         throw new Error("eth_sendTransaction returned no hash")
+      }
+
+      if (lastError) {
+        throw new Error(lastError?.message || String(lastError))
       }
 
       throw new Error("No EIP-1193 provider available")
