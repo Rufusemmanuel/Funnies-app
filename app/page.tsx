@@ -188,24 +188,43 @@ export default function AirdropPage() {
         }
       }
 
+      const txData = appendBuilderCodeSuffix((first.data || "0x") as `0x${string}`)
+      const baseTx: any = { to: first.to, data: txData, from: address }
+      if (first.value !== undefined) baseTx.value = toHex(first.value)
+
       if (eth?.request) {
-        const txData = appendBuilderCodeSuffix((first.data || "0x") as `0x${string}`)
-        const tx: any = { to: first.to, data: txData, from: address }
-        if (first.value !== undefined) tx.value = toHex(first.value)
         try {
-          const gas = await eth.request({ method: "eth_estimateGas", params: [tx] })
-          if (gas) tx.gas = gas
+          const gas = await eth.request({ method: "eth_estimateGas", params: [baseTx] })
+          if (gas) baseTx.gas = gas
         } catch (err) {
           console.warn("eth_estimateGas failed", err)
         }
         const res = await eth.request({
           method: "eth_sendTransaction",
-          params: [tx],
+          params: [baseTx],
         })
         const hash = extractHash(res)
         if (hash) return hash
         throw new Error("eth_sendTransaction returned no hash")
-      } else {
+      }
+
+      if (useDirectEthSend) {
+        const wallet = (miniapp as any)?.actions?.wallet || (miniapp as any)?.wallet
+        if (wallet?.sendTransaction) {
+          try {
+            const res = await wallet.sendTransaction({
+              chainId: base.id,
+              to: baseTx.to,
+              data: baseTx.data,
+              ...(baseTx.value ? { value: baseTx.value } : {}),
+            })
+            const hash = extractHash(res)
+            if (hash) return hash
+            throw new Error("Miniapp wallet sendTransaction returned no hash")
+          } catch (err: any) {
+            throw new Error(`Miniapp wallet sendTransaction failed: ${err?.message || String(err)}`)
+          }
+        }
         throw new Error("No EIP-1193 provider available")
       }
 
