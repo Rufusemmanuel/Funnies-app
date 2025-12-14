@@ -11,8 +11,9 @@ import {
   useSwitchChain,
   useChainId,
   useWaitForTransactionReceipt,
-  useWriteContract,
+  useSendCalls,
 } from "wagmi"
+import { encodeFunctionData, toHex } from "viem"
 import { base } from "viem/chains"
 import { AlertTriangle, BadgeCheck, CheckCircle2, Loader2Icon, Wallet, XCircle } from "lucide-react"
 
@@ -22,6 +23,7 @@ import { NFT_VARIANTS, getDisplayImageUrl, getRandomNft, type FunniesNft } from 
 import { nftAbi } from "@/lib/nftAbi"
 import { findMintForAddress, upsertMintRecord } from "@/lib/mintStorage"
 import { FullScreenSuccess } from "./components/FullScreenSuccess"
+import { appendBuilderCodeSuffix, sendCallsCapabilities } from "@/lib/builderCode"
 
 type ClaimState = "idle" | "loading" | "success" | "error"
 
@@ -31,7 +33,7 @@ export default function AirdropPage() {
   const { disconnect } = useDisconnect()
   const { switchChainAsync } = useSwitchChain()
   const currentChainId = useChainId()
-  const { writeContractAsync } = useWriteContract()
+  const { sendCallsAsync } = useSendCalls()
   const [txHash, setTxHash] = useState<`0x${string}` | undefined>()
   const { data: receipt } = useWaitForTransactionReceipt({
     hash: txHash,
@@ -108,6 +110,83 @@ export default function AirdropPage() {
     [address],
   )
 
+  const sendWithBuilderCode = useCallback(
+    async (calls: { to: `0x${string}`; data?: `0x${string}`; value?: bigint }[]) => {
+      const eth = typeof window !== "undefined" ? (window as any).ethereum : undefined
+      const extractHash = (res: any): `0x${string}` | undefined => {
+        if (!res) return undefined
+        if (typeof res === "string") return res as `0x${string}`
+        if (Array.isArray(res)) {
+          const first = res[0]
+          if (first?.hash && typeof first.hash === "string") return first.hash as `0x${string}`
+        }
+        if (res?.hash && typeof res.hash === "string") return res.hash as `0x${string}`
+        return undefined
+      }
+
+      try {
+        const res = await sendCallsAsync?.({ calls, chainId: base.id, capabilities: sendCallsCapabilities() })
+        const hash = extractHash(res)
+        if (hash) return hash
+      } catch (err) {
+        // continue to fallback
+      }
+
+      if (eth?.request) {
+        try {
+          await eth.request({ method: "eth_requestAccounts" })
+        } catch {
+          /* ignore */
+        }
+
+        try {
+          const res = await eth.request({
+            method: "wallet_sendCalls",
+            params: [
+              {
+                calls: calls.map((c) => ({
+                  to: c.to,
+                  data: c.data,
+                  value: c.value !== undefined ? toHex(c.value) : undefined,
+                })),
+                capabilities: sendCallsCapabilities(),
+              },
+            ],
+          })
+          const hash = extractHash(res)
+          if (hash) return hash
+        } catch {
+          // continue to final fallback
+        }
+
+        try {
+          const first = calls[0]
+          if (first) {
+            const txData = appendBuilderCodeSuffix((first.data || "0x") as `0x${string}`)
+            const res = await eth.request({
+              method: "eth_sendTransaction",
+              params: [
+                {
+                  to: first.to,
+                  data: txData,
+                  from: address,
+                  value: first.value !== undefined ? toHex(first.value) : undefined,
+                },
+              ],
+            })
+            const hash = extractHash(res)
+            if (hash) return hash
+          }
+        } catch (err) {
+          throw err
+        }
+      }
+
+      throw new Error("Unable to send transaction with builder code attached.")
+    },
+    [address, sendCallsAsync],
+  )
+
   const handleClaim = useCallback(async () => {
     const storedMint = findMintForAddress(address)
     if (storedMint) {
@@ -148,14 +227,12 @@ export default function AirdropPage() {
     setErrorMessage("")
 
     try {
-      const hash = await writeContractAsync({
-        address: mintContract,
+      const data = encodeFunctionData({
         abi: nftAbi,
         functionName: "safeMint",
         args: [address, pick.metadataUrl],
-        // All mints occur on Base mainnet.
-        chainId: base.id,
       })
+      const hash = await sendWithBuilderCode([{ to: mintContract, data }])
       setTxHash(hash)
       setMintedNft(pick)
       setMintTxHash(hash)
@@ -164,7 +241,7 @@ export default function AirdropPage() {
       setClaimStatus("error")
       setErrorMessage(err?.shortMessage ?? err?.message ?? "Mint failed. Check console for details.")
     }
-  }, [activeUser, address, isEligible, mintContract, writeContractAsync])
+  }, [activeUser, address, isEligible, mintContract, sendWithBuilderCode])
 
   useEffect(() => {
     void refreshMiniAppContext()

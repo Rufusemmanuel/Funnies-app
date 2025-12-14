@@ -60,3 +60,6 @@ pnpm dev
    - Links to the tx using `NEXT_PUBLIC_BASE_EXPLORER_URL`.
 
 NFT image/metadata URLs in `lib/nfts.ts` are placeholders—swap them for your final IPFS/HTTPS JPEG URIs.***
+
+## Builder Code Attribution
+- Base Builder Code enabled (bc_jygg2lkx). Transactions use sendCalls/wallet_sendCalls with capabilities: { dataSuffix } (see lib/builderCode.ts), with fallback appending the suffix to calldata for eth_sendTransaction.
