@@ -113,6 +113,16 @@ export default function AirdropPage() {
   const sendWithBuilderCode = useCallback(
     async (calls: { to: `0x${string}`; data?: `0x${string}`; value?: bigint }[]) => {
       const eth = typeof window !== "undefined" ? (window as any).ethereum : undefined
+      const isFarcasterMiniApp = () => {
+        if (typeof window === "undefined") return false
+        try {
+          if (/Farcaster|Warpcast/i.test(navigator.userAgent)) return true
+          const g = window as any
+          if (g.farcaster || g.sdk) return true
+          if (window.parent && window.parent !== window) return true
+        } catch {}
+        return false
+      }
       const extractHash = (res: any): `0x${string}` | undefined => {
         if (!res) return undefined
         if (typeof res === "string") return res as `0x${string}`
@@ -124,62 +134,68 @@ export default function AirdropPage() {
         return undefined
       }
 
-      try {
-        const res = await sendCallsAsync?.({ calls, chainId: base.id, capabilities: sendCallsCapabilities() })
-        const hash = extractHash(res)
-        if (hash) return hash
-      } catch (err) {
-        // continue to fallback
-      }
+      const first = calls[0]
+      if (!first) throw new Error("No calls provided for transaction send.")
 
-      if (eth?.request) {
-        try {
-          await eth.request({ method: "eth_requestAccounts" })
-        } catch {
-          /* ignore */
-        }
+      // If Farcaster/Warpcast mini app, skip sendCalls/wallet_sendCalls and go straight to eth_sendTransaction.
+      const useDirectEthSend = isFarcasterMiniApp()
 
+      if (!useDirectEthSend) {
         try {
-          const res = await eth.request({
-            method: "wallet_sendCalls",
-            params: [
-              {
-                calls: calls.map((c) => ({
-                  to: c.to,
-                  data: c.data,
-                  value: c.value !== undefined ? toHex(c.value) : undefined,
-                })),
-                capabilities: sendCallsCapabilities(),
-              },
-            ],
+          const res = await sendCallsAsync?.({
+            calls,
+            chainId: base.id,
+            capabilities: sendCallsCapabilities(),
           })
           const hash = extractHash(res)
           if (hash) return hash
         } catch {
-          // continue to final fallback
+          // continue to fallback
         }
 
-        try {
-          const first = calls[0]
-          if (first) {
-            const txData = appendBuilderCodeSuffix((first.data || "0x") as `0x${string}`)
+        if (eth?.request) {
+          try {
+            await eth.request({ method: "eth_requestAccounts" })
+          } catch {
+            /* ignore */
+          }
+          try {
             const res = await eth.request({
-              method: "eth_sendTransaction",
+              method: "wallet_sendCalls",
               params: [
                 {
-                  to: first.to,
-                  data: txData,
-                  from: address,
-                  value: first.value !== undefined ? toHex(first.value) : undefined,
+                  calls: calls.map((c) => ({
+                    to: c.to,
+                    data: c.data,
+                    value: c.value !== undefined ? toHex(c.value) : undefined,
+                  })),
+                  capabilities: sendCallsCapabilities(),
                 },
               ],
             })
             const hash = extractHash(res)
             if (hash) return hash
+          } catch {
+            /* continue to eth_sendTransaction */
           }
-        } catch (err) {
-          throw err
         }
+      }
+
+      if (eth?.request) {
+        const txData = appendBuilderCodeSuffix((first.data || "0x") as `0x${string}`)
+        const res = await eth.request({
+          method: "eth_sendTransaction",
+          params: [
+            {
+              to: first.to,
+              data: txData,
+              from: address,
+              value: first.value !== undefined ? toHex(first.value) : undefined,
+            },
+          ],
+        })
+        const hash = extractHash(res)
+        if (hash) return hash
       }
 
       throw new Error("Unable to send transaction with builder code attached.")
