@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import Image from "next/image"
-import { sdk as miniapp } from "@farcaster/miniapp-sdk"
+import sdk from "@farcaster/miniapp-sdk"
 import type { MiniAppContext, MiniAppUser } from "@farcaster/miniapp-core"
 import {
   useAccount,
@@ -72,11 +72,11 @@ export default function AirdropPage() {
 
   const refreshMiniAppContext = useCallback(async () => {
     try {
-      const inMiniApp = await miniapp.isInMiniApp()
+      const inMiniApp = await sdk.isInMiniApp()
       setIsMiniApp(inMiniApp)
       if (!inMiniApp) return
 
-      const ctx = await miniapp.context
+      const ctx = await sdk.context
       setMiniContext(ctx)
     } catch (err: any) {
       setContextError(err?.message ?? "Unable to load Farcaster context")
@@ -112,23 +112,9 @@ export default function AirdropPage() {
 
   const sendWithBuilderCode = useCallback(
     async (calls: { to: `0x${string}`; data?: `0x${string}`; value?: bigint }[]) => {
-      const eth = typeof window !== "undefined" ? (window as any).ethereum : undefined
-      const isFarcasterMiniApp = () => {
-        if (typeof window === "undefined") return false
-        try {
-          if (/Farcaster|Warpcast/i.test(navigator.userAgent)) return true
-          const g = window as any
-          if (g.farcaster || g.warpcast || g.sdk) return true
-          if (typeof document !== "undefined") {
-            const ref = document.referrer || ""
-            if (/warpcast\.com|farcaster/i.test(ref)) return true
-          }
-          if (window.parent && window.parent !== window) return true
-        } catch (err) {
-          console.warn("Farcaster detection error", err)
-        }
-        return false
-      }
+      const ethWindow = typeof window !== "undefined" ? (window as any).ethereum : undefined
+      const isMini = await sdk.isInMiniApp().catch(() => false)
+      const eth = isMini ? await sdk.wallet.getEthereumProvider().catch(() => undefined) : ethWindow
       const extractHash = (res: any): `0x${string}` | undefined => {
         if (!res) return undefined
         if (typeof res === "string") return res as `0x${string}`
@@ -143,10 +129,7 @@ export default function AirdropPage() {
       const first = calls[0]
       if (!first) throw new Error("No calls provided for transaction send.")
 
-      // If Farcaster/Warpcast mini app, skip sendCalls/wallet_sendCalls and go straight to eth_sendTransaction.
-      const useDirectEthSend = isFarcasterMiniApp()
-
-      if (!useDirectEthSend) {
+      if (!isMini) {
         try {
           const res = await sendCallsAsync?.({
             calls,
@@ -208,27 +191,7 @@ export default function AirdropPage() {
         throw new Error("eth_sendTransaction returned no hash")
       }
 
-      if (useDirectEthSend) {
-        const wallet = (miniapp as any)?.actions?.wallet || (miniapp as any)?.wallet
-        if (wallet?.sendTransaction) {
-          try {
-            const res = await wallet.sendTransaction({
-              chainId: base.id,
-              to: baseTx.to,
-              data: baseTx.data,
-              ...(baseTx.value ? { value: baseTx.value } : {}),
-            })
-            const hash = extractHash(res)
-            if (hash) return hash
-            throw new Error("Miniapp wallet sendTransaction returned no hash")
-          } catch (err: any) {
-            throw new Error(`Miniapp wallet sendTransaction failed: ${err?.message || String(err)}`)
-          }
-        }
-        throw new Error("No EIP-1193 provider available")
-      }
-
-      throw new Error("Unable to send transaction with builder code attached.")
+      throw new Error("No EIP-1193 provider available")
     },
     [address, sendCallsAsync],
   )
@@ -290,6 +253,7 @@ export default function AirdropPage() {
   }, [activeUser, address, isEligible, mintContract, sendWithBuilderCode])
 
   useEffect(() => {
+    void sdk.actions.ready?.().catch(() => {})
     void refreshMiniAppContext()
   }, [refreshMiniAppContext])
 
@@ -297,10 +261,10 @@ export default function AirdropPage() {
     const promptAddMiniApp = async () => {
       if (addPromptShown.current) return
       try {
-        const inMiniApp = await miniapp.isInMiniApp()
+        const inMiniApp = await sdk.isInMiniApp()
         if (!inMiniApp) return
         addPromptShown.current = true
-        await miniapp.actions.addMiniApp() // Triggers Farcaster native add/notify sheet
+        await sdk.actions.addMiniApp() // Triggers Farcaster native add/notify sheet
       } catch (err) {
         console.warn("Add Mini App prompt skipped", err)
       }
@@ -332,8 +296,8 @@ export default function AirdropPage() {
       const disabled = !isEligible || !address || claimStatus === "loading"
       const loading = claimStatus === "loading"
       try {
-        await miniapp.actions.ready({ title: "funnies", primaryButton: { title } })
-        await miniapp.actions.setPrimaryButton({ title, disabled, loading })
+        await sdk.actions.ready({ title: "funnies", primaryButton: { title } })
+        await sdk.actions.setPrimaryButton({ title, disabled, loading })
         setReadySent(true)
       } catch {
         // Ignore outside Mini App shell
@@ -346,7 +310,7 @@ export default function AirdropPage() {
       // Keep label/state in sync after first ready call.
       void (async () => {
         try {
-          await miniapp.actions.setPrimaryButton({
+          await sdk.actions.setPrimaryButton({
             title: claimStatus === "success" ? "Minted" : "Claim NFT",
             disabled: !isEligible || !address || claimStatus === "loading",
             loading: claimStatus === "loading",
@@ -361,8 +325,8 @@ export default function AirdropPage() {
   useEffect(() => {
     if (!isMiniApp) return
     const handler = () => void handleClaim()
-    miniapp.on("primaryButtonClicked", handler)
-    return () => miniapp.off("primaryButtonClicked", handler)
+    sdk.on("primaryButtonClicked", handler)
+    return () => sdk.off("primaryButtonClicked", handler)
   }, [handleClaim, isMiniApp])
 
   const connectWallet = async () => {
