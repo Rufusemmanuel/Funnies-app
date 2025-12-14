@@ -3,7 +3,6 @@ node_modules
 .next
 .turbo
 .DS_Store
-package-lock.json
 .env
 .env.local
 .vercel
@@ -15,7 +14,6 @@ contracts/artifacts
 .next
 .turbo
 .DS_Store
-package-lock.json
 .env
 .env.local
 .vercel
