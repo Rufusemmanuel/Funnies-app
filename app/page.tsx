@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import Image from "next/image"
+import Link from "next/link"
 import sdk from "@farcaster/miniapp-sdk"
 import type { MiniAppContext, MiniAppUser } from "@farcaster/miniapp-core"
 import {
@@ -419,6 +420,11 @@ export default function AirdropPage() {
       <div className="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-primary/20 rounded-full blur-[100px] pointer-events-none mix-blend-multiply opacity-60 animate-pulse" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-secondary/40 rounded-full blur-[100px] pointer-events-none mix-blend-multiply opacity-60" />
       <div className="absolute top-[40%] left-[40%] w-[300px] h-[300px] bg-accent/20 rounded-full blur-[80px] pointer-events-none mix-blend-multiply opacity-50" />
+      <div className="absolute top-6 right-6 z-20">
+        <Button asChild variant="outline" size="sm" className="bg-white/70 backdrop-blur border-white/50">
+          <Link href="/menu">Menu</Link>
+        </Button>
+      </div>
 
       <div className="z-10 w-full max-w-4xl space-y-8">
         <div className="text-center space-y-3 flex flex-col items-center">
